@@ -16,7 +16,7 @@ export const gloobalStyles = StyleSheet.create({
 
   mainResult: {
     color: Colors.textPrimary,
-    fontSize: 70,
+    fontSize: 60,
     textAlign: "right",
     fontWeight: "400",
   },

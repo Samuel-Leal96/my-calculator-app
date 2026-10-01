@@ -9,7 +9,7 @@ const CustomText = ({ children, variant = "h1", ...rest }: Props) => {
   return (
     <Text
       style={[
-        { color: "white", fontFamily: "SpaceMono" },
+        { color: "white" },
         variant === "h1" && gloobalStyles.mainResult,
         variant === "h2" && gloobalStyles.subResult,
       ]}

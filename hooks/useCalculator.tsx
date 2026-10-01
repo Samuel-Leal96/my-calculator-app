@@ -19,7 +19,7 @@ export const useCalculator = () => {
     if (lastOperation.current) {
       const firstFormulaParth = formula.split(" ").at(0);
 
-      setFormula(`${firstFormulaParth} ${lastOperation.current} ${number} `);
+      setFormula(`${firstFormulaParth} ${lastOperation.current} ${number}`);
     } else {
       setFormula(number);
     }
