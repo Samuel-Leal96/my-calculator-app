@@ -17,9 +17,13 @@ export const useCalculator = () => {
 
   useEffect(() => {
     if (lastOperation.current) {
-      const firstFormulaParth = formula.split(" ").at(0);
+      const firstFormulaPart = formula.split(" ").at(0);
 
-      setFormula(`${firstFormulaParth} ${lastOperation.current} ${number}`);
+      if (number === "0") {
+        setFormula(`${firstFormulaPart} ${lastOperation.current}`);
+      } else {
+        setFormula(`${firstFormulaPart} ${lastOperation.current} ${number}`);
+      }
     } else {
       setFormula(number);
     }
@@ -88,12 +92,12 @@ export const useCalculator = () => {
       // Caso 1: Si el usuario aún no ha escrito el segundo número (number === "0")
       if (number === "0") {
         lastOperation.current = operator;
-        setFormula(`${firstFormulaPart} ${operator} ${number}`);
+        setFormula(`${firstFormulaPart} ${operator}`);
       } else {
         // Caso 2: Si el usuario ya escribió un segundo número (ej. "42 + 5") y presiona otro operador
         const subResult = calculateSubResult();
         lastOperation.current = operator;
-        setFormula(`${subResult} ${operator} 0`);
+        setFormula(`${subResult} ${operator}`);
         setNumber("0");
       }
       return;
@@ -101,6 +105,7 @@ export const useCalculator = () => {
 
     setLastNumber();
     lastOperation.current = operator;
+    setFormula(`${formula} ${operator}`);
   };
 
   const divideOperation = () => {
@@ -154,6 +159,16 @@ export const useCalculator = () => {
   };
 
   const buildNumber = (numberString: string) => {
+    // Si recién seleccionamos el operador (ej. "10 -") y el usuario presiona "0"
+    if (
+      lastOperation.current &&
+      formula.split(" ").length === 2 &&
+      numberString === "0"
+    ) {
+      setFormula(`${formula} 0`);
+      return;
+    }
+
     // Verificar si ya existe el punto decimal
     if (number.includes(".") && numberString === ".") return;
 
