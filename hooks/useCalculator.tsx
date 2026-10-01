@@ -39,6 +39,8 @@ export const useCalculator = () => {
   };
 
   const toggleSign = () => {
+    if (number === "0") return;
+
     if (number.startsWith("-")) {
       setNumber(number.substring(1));
     } else {
@@ -47,20 +49,24 @@ export const useCalculator = () => {
   };
 
   const deleteLastNumber = () => {
-    calculateResult();
+    // calculateResult();
 
     let currentSign = "";
     let temporalNumber = number;
 
-    if (number.includes("-")) {
-      currentSign = "-";
-      temporalNumber = number.substring(1);
-    }
-
-    if (temporalNumber.length > 1) {
-      return setNumber(currentSign + temporalNumber.slice(0, -1));
+    if (formula.split(" ").length > 1) {
+      setFormula(formula.slice(0, -1));
     } else {
-      setNumber("0");
+      if (number.includes("-")) {
+        currentSign = "-";
+        temporalNumber = number.substring(1);
+      }
+
+      if (temporalNumber.length > 1) {
+        return setNumber(currentSign + temporalNumber.slice(0, -1));
+      } else {
+        setNumber("0");
+      }
     }
   };
 
@@ -127,6 +133,10 @@ export const useCalculator = () => {
 
     lastOperation.current = undefined;
     setPrevNumber("0");
+
+    console.log({ result });
+
+    console.log({ formula });
   };
 
   const buildNumber = (numberString: string) => {
