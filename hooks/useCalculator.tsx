@@ -1,0 +1,180 @@
+import { useEffect, useRef, useState } from "react";
+
+enum Operator {
+  add = "+",
+  subtract = "-",
+  multiply = "*",
+  divide = "÷",
+}
+
+export const useCalculator = () => {
+  const [formula, setFormula] = useState("");
+
+  const [number, setNumber] = useState("0");
+  const [prevNumber, setPrevNumber] = useState("0");
+
+  const lastOperation = useRef<Operator>(undefined);
+
+  useEffect(() => {
+    if (lastOperation.current) {
+      const firstFormulaParth = formula.split(" ").at(0);
+
+      setFormula(`${firstFormulaParth} ${lastOperation.current} ${number} `);
+    } else {
+      setFormula(number);
+    }
+  }, [number]);
+
+  useEffect(() => {
+    const subResult = calculateSubResult();
+    setPrevNumber(subResult.toString());
+  }, [formula]);
+
+  const clean = () => {
+    console.log("Clean method");
+    setNumber("0");
+    setPrevNumber("0");
+    setFormula("0");
+    lastOperation.current = undefined;
+  };
+
+  const toggleSign = () => {
+    if (number.startsWith("-")) {
+      setNumber(number.substring(1));
+    } else {
+      setNumber("-" + number);
+    }
+  };
+
+  const deleteLastNumber = () => {
+    calculateResult();
+
+    let currentSign = "";
+    let temporalNumber = number;
+
+    if (number.includes("-")) {
+      currentSign = "-";
+      temporalNumber = number.substring(1);
+    }
+
+    if (temporalNumber.length > 1) {
+      return setNumber(currentSign + temporalNumber.slice(0, -1));
+    } else {
+      setNumber("0");
+    }
+  };
+
+  const setLastNumber = () => {
+    // Calular resultado
+
+    if (number.endsWith(".")) {
+      setPrevNumber(number.slice(0, -1));
+    }
+
+    setPrevNumber(number);
+    setNumber("0");
+  };
+
+  const divideOperation = () => {
+    setLastNumber();
+    console.log({ prevNumber });
+    lastOperation.current = Operator.divide;
+  };
+
+  const multiplyOperation = () => {
+    setLastNumber();
+    console.log({ prevNumber });
+    lastOperation.current = Operator.multiply;
+  };
+
+  const subtractOperation = () => {
+    setLastNumber();
+    console.log({ prevNumber });
+    lastOperation.current = Operator.subtract;
+  };
+
+  const addOperation = () => {
+    setLastNumber();
+    console.log({ prevNumber });
+    lastOperation.current = Operator.add;
+  };
+
+  const calculateSubResult = () => {
+    const [firstNumber, operator, secondNumber] = formula.split(" ");
+
+    const num1 = Number(firstNumber);
+    const num2 = Number(secondNumber);
+
+    if (isNaN(num2)) return num1;
+
+    switch (lastOperation.current) {
+      case Operator.add:
+        return num1 + num2;
+      case Operator.subtract:
+        return num1 - num2;
+      case Operator.multiply:
+        return num1 * num2;
+      case Operator.divide:
+        return num1 / num2;
+      default:
+        throw new Error(`Operación ${operator} no reconocida`);
+    }
+  };
+
+  const calculateResult = () => {
+    const result = calculateSubResult();
+    setFormula(`${result}`);
+
+    lastOperation.current = undefined;
+    setPrevNumber("0");
+  };
+
+  const buildNumber = (numberString: string) => {
+    // Verificar si ya existe el punto decimal
+    if (number.includes(".") && numberString === ".") return;
+
+    // Verificar si el número empieza con cero
+    if (number.startsWith("0") || number.startsWith("-0")) {
+      // Verificar si estamos escribiendo el punto decimal
+      if (numberString === ".") {
+        return setNumber(number + numberString);
+      }
+
+      // Verificar si es otro cero y no hay punto decimal
+      if (numberString === "0" && number.includes(".")) {
+        return setNumber(number + numberString);
+      }
+
+      // Evaluar si es diferente de cero, no hay punto decimal y el primer número es cero
+      if (numberString !== "0" && !number.includes(".")) {
+        return setNumber(numberString);
+      }
+
+      // Evitar el 0000.000
+      if (numberString === "0" && !number.includes(".")) {
+        return;
+      }
+    }
+
+    return setNumber(number + numberString);
+  };
+
+  return {
+    // Props
+    formula,
+    number,
+    prevNumber,
+
+    // Methods
+    buildNumber,
+    clean,
+    toggleSign,
+    deleteLastNumber,
+    divideOperation,
+    multiplyOperation,
+    subtractOperation,
+    addOperation,
+    calculateSubResult,
+    calculateResult,
+  };
+};

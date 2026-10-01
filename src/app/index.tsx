@@ -1,98 +1,170 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from "@/constants/Colors";
+import { View } from "react-native";
+import CalculatorButton from "../../components/CalculatorButton";
+import CustomText from "../../components/CustomText";
+import { useCalculator } from "../../hooks/useCalculator";
+import { gloobalStyles } from "../../styles/global-styles";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const CalculatorApp = () => {
+  const {
+    formula,
+    prevNumber,
+    buildNumber,
+    clean,
+    toggleSign,
+    deleteLastNumber,
+    divideOperation,
+    multiplyOperation,
+    subtractOperation,
+    addOperation,
+    calculateSubResult,
+    calculateResult,
+  } = useCalculator();
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={gloobalStyles.calculatorContainer}>
+      {/* Resultados */}
+      <CustomText variant="h1">{formula}</CustomText>
+
+      {!formula.includes(" ") ? (
+        <CustomText variant="h2"> </CustomText>
+      ) : (
+        <CustomText variant="h2">{prevNumber}</CustomText>
+      )}
+
+      {/* Filas de botones */}
+
+      {/* Primera fila */}
+      <View style={gloobalStyles.buttonRow}>
+        <CalculatorButton
+          label="C"
+          blackText
+          color={Colors.lightGray}
+          onPress={clean}
+        />
+        <CalculatorButton
+          label="+/-"
+          blackText
+          color={Colors.lightGray}
+          onPress={toggleSign}
+        />
+        <CalculatorButton
+          label="del"
+          blackText
+          color={Colors.lightGray}
+          onPress={deleteLastNumber}
+        />
+        <CalculatorButton
+          label="÷"
+          color={Colors.orange}
+          onPress={divideOperation}
+        />
+      </View>
+
+      {/* Segunda fila */}
+      <View style={gloobalStyles.buttonRow}>
+        <CalculatorButton
+          label="7"
+          onPress={() => {
+            buildNumber("7");
+          }}
+        />
+        <CalculatorButton
+          label="8"
+          onPress={() => {
+            buildNumber("8");
+          }}
+        />
+        <CalculatorButton
+          label="9"
+          onPress={() => {
+            buildNumber("9");
+          }}
+        />
+        <CalculatorButton
+          label="x"
+          color={Colors.orange}
+          onPress={multiplyOperation}
+        />
+      </View>
+
+      {/* Tercera fila */}
+      <View style={gloobalStyles.buttonRow}>
+        <CalculatorButton
+          label="4"
+          onPress={() => {
+            buildNumber("4");
+          }}
+        />
+        <CalculatorButton
+          label="5"
+          onPress={() => {
+            buildNumber("5");
+          }}
+        />
+        <CalculatorButton
+          label="6"
+          onPress={() => {
+            buildNumber("6");
+          }}
+        />
+        <CalculatorButton
+          label="-"
+          color={Colors.orange}
+          onPress={subtractOperation}
+        />
+      </View>
+
+      {/* Cuarta fila */}
+      <View style={gloobalStyles.buttonRow}>
+        <CalculatorButton
+          label="1"
+          onPress={() => {
+            buildNumber("1");
+          }}
+        />
+        <CalculatorButton
+          label="2"
+          onPress={() => {
+            buildNumber("2");
+          }}
+        />
+        <CalculatorButton
+          label="3"
+          onPress={() => {
+            buildNumber("3");
+          }}
+        />
+        <CalculatorButton
+          label="+"
+          color={Colors.orange}
+          onPress={addOperation}
+        />
+      </View>
+
+      {/* Quinta fila */}
+      <View style={gloobalStyles.buttonRow}>
+        <CalculatorButton
+          label="0"
+          doubleSize
+          onPress={() => {
+            buildNumber("0");
+          }}
+        />
+        <CalculatorButton
+          label="."
+          onPress={() => {
+            buildNumber(".");
+          }}
+        />
+        <CalculatorButton
+          label="="
+          color={Colors.orange}
+          onPress={calculateResult}
+        />
+      </View>
+    </View>
   );
-}
+};
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});
+export default CalculatorApp;
