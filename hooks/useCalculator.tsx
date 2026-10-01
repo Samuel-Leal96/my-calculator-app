@@ -14,6 +14,7 @@ export const useCalculator = () => {
   const [prevNumber, setPrevNumber] = useState("0");
 
   const lastOperation = useRef<Operator>(undefined);
+  const isResultCalculated = useRef<boolean>(false);
 
   useEffect(() => {
     if (lastOperation.current) {
@@ -39,9 +40,11 @@ export const useCalculator = () => {
     setPrevNumber("0");
     setFormula("0");
     lastOperation.current = undefined;
+    isResultCalculated.current = false;
   };
 
   const toggleSign = () => {
+    isResultCalculated.current = false;
     if (number === "0") return;
 
     if (number.startsWith("-")) {
@@ -52,26 +55,18 @@ export const useCalculator = () => {
   };
 
   const deleteLastNumber = () => {
-    // calculateResult();
+    isResultCalculated.current = false;
+    // Caso 1: Si estamos parados en el operador (ej. "80 *") y el segundo número es "0", borramos el operador
+    if (lastOperation.current && number === "0") {
+      const firstFormulaPart = formula.split(" ").at(0) || "0";
+      lastOperation.current = undefined;
+      setFormula(firstFormulaPart);
+      setNumber(firstFormulaPart);
+      setPrevNumber("0");
+      return;
+    }
 
-    // let currentSign = "";
-    // let temporalNumber = number;
-
-    // if (formula.split(" ").length > 1) {
-    //   setFormula(formula.slice(0, -1));
-    // } else {
-    //   if (number.includes("-")) {
-    //     currentSign = "-";
-    //     temporalNumber = number.substring(1);
-    //   }
-
-    //   if (temporalNumber.length > 1) {
-    //     return setNumber(currentSign + temporalNumber.slice(0, -1));
-    //   } else {
-    //     setNumber("0");
-    //   }
-    // }
-
+    // Caso 2: Borrado normal de dígitos en el número actual
     let currentSign = "";
     let temporalNumber = number;
 
@@ -99,6 +94,8 @@ export const useCalculator = () => {
   };
 
   const changeOperation = (operator: Operator) => {
+    isResultCalculated.current = false;
+
     if (lastOperation.current) {
       const firstFormulaPart = formula.split(" ").at(0);
 
@@ -162,16 +159,27 @@ export const useCalculator = () => {
   const calculateResult = () => {
     const result = calculateSubResult();
     setFormula(`${result}`);
+    setNumber(`${result}`);
 
     lastOperation.current = undefined;
     setPrevNumber("0");
-
-    console.log({ result });
-
-    console.log({ formula });
+    isResultCalculated.current = true;
   };
 
   const buildNumber = (numberString: string) => {
+    // Si se acaba de presionar "=" y se ingresa un nuevo número, se resetea todo para empezar una nueva operación
+    if (isResultCalculated.current) {
+      isResultCalculated.current = false;
+      if (numberString === ".") {
+        setNumber("0.");
+        setFormula("0.");
+        return;
+      }
+      setNumber(numberString);
+      setFormula(numberString);
+      return;
+    }
+
     // Si recién seleccionamos el operador (ej. "10 -") y el usuario presiona "0"
     if (
       lastOperation.current &&
