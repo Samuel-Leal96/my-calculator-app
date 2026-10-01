@@ -81,28 +81,42 @@ export const useCalculator = () => {
     setNumber("0");
   };
 
-  const divideOperation = () => {
+  const changeOperation = (operator: Operator) => {
+    if (lastOperation.current) {
+      const firstFormulaPart = formula.split(" ").at(0);
+
+      // Caso 1: Si el usuario aún no ha escrito el segundo número (number === "0")
+      if (number === "0") {
+        lastOperation.current = operator;
+        setFormula(`${firstFormulaPart} ${operator} ${number}`);
+      } else {
+        // Caso 2: Si el usuario ya escribió un segundo número (ej. "42 + 5") y presiona otro operador
+        const subResult = calculateSubResult();
+        lastOperation.current = operator;
+        setFormula(`${subResult} ${operator} 0`);
+        setNumber("0");
+      }
+      return;
+    }
+
     setLastNumber();
-    console.log({ prevNumber });
-    lastOperation.current = Operator.divide;
+    lastOperation.current = operator;
+  };
+
+  const divideOperation = () => {
+    changeOperation(Operator.divide);
   };
 
   const multiplyOperation = () => {
-    setLastNumber();
-    console.log({ prevNumber });
-    lastOperation.current = Operator.multiply;
+    changeOperation(Operator.multiply);
   };
 
   const subtractOperation = () => {
-    setLastNumber();
-    console.log({ prevNumber });
-    lastOperation.current = Operator.subtract;
+    changeOperation(Operator.subtract);
   };
 
   const addOperation = () => {
-    setLastNumber();
-    console.log({ prevNumber });
-    lastOperation.current = Operator.add;
+    changeOperation(Operator.add);
   };
 
   const calculateSubResult = () => {
