@@ -35,7 +35,6 @@ export const useCalculator = () => {
   }, [formula]);
 
   const clean = () => {
-    console.log("Clean method");
     setNumber("0");
     setPrevNumber("0");
     setFormula("0");
@@ -55,23 +54,37 @@ export const useCalculator = () => {
   const deleteLastNumber = () => {
     // calculateResult();
 
+    // let currentSign = "";
+    // let temporalNumber = number;
+
+    // if (formula.split(" ").length > 1) {
+    //   setFormula(formula.slice(0, -1));
+    // } else {
+    //   if (number.includes("-")) {
+    //     currentSign = "-";
+    //     temporalNumber = number.substring(1);
+    //   }
+
+    //   if (temporalNumber.length > 1) {
+    //     return setNumber(currentSign + temporalNumber.slice(0, -1));
+    //   } else {
+    //     setNumber("0");
+    //   }
+    // }
+
     let currentSign = "";
     let temporalNumber = number;
 
-    if (formula.split(" ").length > 1) {
-      setFormula(formula.slice(0, -1));
-    } else {
-      if (number.includes("-")) {
-        currentSign = "-";
-        temporalNumber = number.substring(1);
-      }
-
-      if (temporalNumber.length > 1) {
-        return setNumber(currentSign + temporalNumber.slice(0, -1));
-      } else {
-        setNumber("0");
-      }
+    if (number.includes("-")) {
+      currentSign = "-";
+      temporalNumber = number.substring(1);
     }
+
+    if (temporalNumber.length > 1) {
+      return setNumber(currentSign + temporalNumber.slice(0, -1));
+    }
+
+    setNumber("0");
   };
 
   const setLastNumber = () => {
